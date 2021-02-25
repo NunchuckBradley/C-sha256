@@ -2,6 +2,9 @@
 #define MSHA256_H
 
 #include "uint_custom.h"
+#include <string>
+#include <sstream>
+#include <iostream>
 
 // attempting to create a sha256 hash algorithm myself with https://qvault.io/2020/07/08/how-sha-2-works-step-by-step-sha-256/
 // also used http://www.zedwood.com/article/cpp-sha256-function to identify bad areas.
@@ -50,7 +53,13 @@ public:
         return hashed2;
     }
 
-    static uint256<256> sha256AlgorithmUint256Input(unsigned char* input, int length) {
+    static uint256<256> sha256AlgorithmUint256Input(unsigned char* inputorig, int length) {
+        // input needs to be divisible by 4
+        int intdivision = ((length >> 6) << 6) + 64;
+        unsigned char input[intdivision];
+        memset(&input, 0x00, intdivision);
+        memcpy(&input, inputorig, length);
+
         int blocks = ((length - (length % 56)) / 56) + 1;
         int i = 0;
         unsigned int schedules[blocks][64];
@@ -75,11 +84,16 @@ public:
                 schedules[bl][i] = one + two + three + four;
             }
 
+            // add a single bit to end of values
             if (bl+1 == blocks && length > 32) {
                 schedules[bl][4] = 0x80000000;
                 schedules[bl][15] = length*8;
             } else if ((length == 32) && (bl+1 == blocks)) {
                 schedules[bl][8] = 0x80000000;
+                schedules[bl][15] = length*8;
+            } else if (length < 32) {
+                int remains = length % 4;
+                schedules[bl][length / 4] += (0x80000000 >> (remains*8));
                 schedules[bl][15] = length*8;
             }
         }
