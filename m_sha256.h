@@ -2,9 +2,6 @@
 #define MSHA256_H
 
 #include "uint_custom.h"
-#include <string>
-#include <sstream>
-#include <iostream>
 
 // attempting to create a sha256 hash algorithm myself with https://qvault.io/2020/07/08/how-sha-2-works-step-by-step-sha-256/
 // also used http://www.zedwood.com/article/cpp-sha256-function to identify bad areas.
