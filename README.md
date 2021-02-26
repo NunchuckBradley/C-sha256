@@ -3,7 +3,7 @@
 A sha256 hasher using C++
 
 
-```
+```C++
 
 #include "m_sha256.h"
 
